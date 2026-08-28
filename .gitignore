@@ -3,3 +3,5 @@
 .venv
 sortie
 sources
+src/test.py
+src/main_cli.py

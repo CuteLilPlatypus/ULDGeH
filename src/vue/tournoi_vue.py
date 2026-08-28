@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
 
-from struct_donnees import Tournoi, Partie
-from style import Couleur
+from src.modele.partie import Partie
+from src.modele.tournoi import Tournoi
+from src.vue.style import Couleur
 
 couleurs = {
     1: Couleur.ORANGE,

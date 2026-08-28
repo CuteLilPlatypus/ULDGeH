@@ -3,23 +3,30 @@ import tkinter as tk
 
 from tkinter import filedialog
 
-from fenetre_ajout_fiches import UIAjoutPartie
-from struct_donnees import Tournoi
-from TournoiVue import TournoiVue
-from gestionnaire_excel import generer_excel
+from src.vue.fenetre_ajout_fiches import UIAjoutPartie
+from src.modele.tournoi import Tournoi
+from src.vue.tournoi_vue import TournoiVue
 
 
 def initialiser_tournoi():
-    for fichier in os.listdir(os.getcwd()):
+    for fichier in os.listdir(os.getcwd()+"/src"):
         if fichier == "dernier.json":
             return Tournoi.charger(os.getcwd() + "/" + fichier)
     return None
 
 
 class App:
+    """
+    Application principale du logiciel
+    """
+
     tournoi: Tournoi | None
 
     def __init__(self, racine: tk.Tk):
+        """
+        Initialisation
+        :param racine: composant dans lequel l'app est desinnées.
+        """
         self.racine = racine
         self.tournoi = initialiser_tournoi()
 
@@ -44,7 +51,7 @@ class App:
         page.pack(fill="both")
 
     def ouvrir_tournoi(self):
-        chemin = filedialog.askopenfilename(parent=self.racine, filetypes=[("json", ".json")])
+        chemin = filedialog.askopenfilename(parent=self.racine, filetypes=[("json", ".json"),("xlsx", ".xlsx")])
         if chemin:
             self.tournoi = Tournoi.charger(chemin)
             self.tournoi.sauvegarder("dernier.json")
@@ -70,7 +77,7 @@ class App:
     def sauvegarder_excel(self):
         chemin = filedialog.asksaveasfilename(parent=self.racine, filetypes=[("xlsx", ".xlsx")])
         if chemin and self.tournoi:
-            generer_excel(self.tournoi,chemin)
+            self.tournoi.generer_excel(chemin)
 
     def sauvegarder_json(self):
         if self.tournoi:
