@@ -1,3 +1,7 @@
+"""
+Fichier qui contient la classe Tournoi
+"""
+
 import json
 import os
 
@@ -18,6 +22,9 @@ class Tournoi:
     equipes: dict[str, Equipe]  # La liste des équipes inscrites
 
     def __init__(self, nom: str = "Tournoi"):
+        """
+        :param nom: nom d'identification du tournoi
+        """
         self.nom = nom
         self.parties = []
         self.equipes = {}
@@ -390,7 +397,7 @@ class Tournoi:
             plateau_min = min(parties_plateau)
             plateau_max = max(parties_plateau)
 
-            # En-têtes des matchs (fusionnées sur les 2 colonnes code/score de chaque match)
+            # En-têtes des matchs (fusionnées sur les deux colonnes code/score de chaque match)
             for match in range(1, match_max + 1):
                 col_code = 2 + (match - 1) * 2
                 cell = ws.cell(row=1, column=col_code, value=f"M{match}")
@@ -449,7 +456,7 @@ class Tournoi:
             # Largeurs des colonnes
             ws.column_dimensions["A"].width = 12
             for col in range(2, 2 + match_max * 2):
-                ws.column_dimensions[openpyxl.utils.get_column_letter(col)].width = 6
+                ws.column_dimensions[openpyxl.kutils.get_column_letter(col)].width = 6
 
         # Création du fichier
         wb = Workbook()

@@ -1,3 +1,6 @@
+"""
+Fichier qui contient les classes Partie et ResultatMatch.
+"""
 class Partie:
     """La classe qui contient les infos d'une partie"""
     niveau: int  # Niveau de la partie
@@ -41,6 +44,13 @@ class ResultatMatch:
     """Classe qui contient tous les résultats d'une partie, incluant les scores"""
 
     def __init__(self, num_match, niveau, plateau, scores, vainqueur):
+        """
+        :param num_match: numéro du match
+        :param niveau: niveau du match
+        :param plateau: plateau du match
+        :param scores: scores des équipes et des joueurs (dict)
+        :param vainqueur: code de l'équipe victorieuse
+        """
         self.num_match = num_match
         self.niveau = niveau
         self.plateau = plateau
