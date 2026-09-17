@@ -44,17 +44,19 @@ class App:
         barre = tk.Frame(cadre)
         barre.pack(fill="both")
 
+        # Chaque bouton appelle la méthode correspondante ci-dessous (voir plus bas dans la classe)
         tk.Button(barre, text="ajouter", command=self.creer_fenetre_ajout_partie).pack(side="left")
         tk.Button(barre, text="ouvrir", command=self.ouvrir_tournoi).pack(side="left")
         tk.Button(barre, text="sauvegarder", command=self.sauvegarder_json).pack(side="left")
         tk.Button(barre, text="Exporter au format XLSX", command = self.sauvegarder_excel).pack(side="left")
-        #Raccourcis clavier connexes aux boutons
+        # Raccourcis clavier connexes aux boutons (mêmes fonctions que ci-dessus)
         racine.bind("<Control-a>", lambda e: self.creer_fenetre_ajout_partie())
         racine.bind("<Control-s>", lambda e: self.sauvegarder_json())
         racine.bind("<Control-e>", lambda e: self.sauvegarder_excel())
         racine.bind("<Control-o>", lambda e: self.ouvrir_tournoi())
 
-        # Contenu principal
+        # Contenu principal : un cadre vide au départ, rempli par rafraichir()
+        # (qui affichera soit la vue du tournoi, soit un message si aucun tournoi n'est chargé)
         page = self.page=tk.Frame(cadre)
         self.rafraichir()
 
@@ -93,19 +95,32 @@ class App:
         else:
             tk.Label(self.page, text="Veuillez charger un tournoi").pack(side="left")
 
-    #Fonction des boutons
-    #Exporter excel
+    # Fonctions des boutons
     def sauvegarder_excel(self):
+        """
+        Fonction du bouton "Exporter au format XLSX" : demande à l'utilisateur
+        où enregistrer le fichier, puis génère le rapport Excel du tournoi.
+        """
         chemin = filedialog.asksaveasfilename(parent=self.racine, filetypes=[("xlsx", ".xlsx")])
         if chemin and self.tournoi:
             self.tournoi.generer_excel(chemin)
 
-    #Exporter JSON
     def sauvegarder_json(self):
+        """
+        Fonction du bouton "sauvegarder" : sauvegarde l'état actuel du tournoi
+        dans le fichier "dernier.json", qui sera rechargé automatiquement
+        au prochain démarrage de l'application (voir initialiser_tournoi).
+        """
         if self.tournoi:
             self.tournoi.sauvegarder_json("dernier.json")
-    #Ajouter une partie
+
     def creer_fenetre_ajout_partie(self):
+        """
+        Fonction du bouton "ajouter" : ouvre la fenêtre de saisie d'une nouvelle
+        partie. Ne fait rien si aucun tournoi n'est chargé.
+        Une fois la partie ajoutée, self._maj_tournoi est appelée (voir UIAjoutPartie)
+        pour mettre à jour l'affichage.
+        """
         if not self.tournoi:
             return 1
 

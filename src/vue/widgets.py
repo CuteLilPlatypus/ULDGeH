@@ -1,3 +1,11 @@
+"""
+Fichier qui contient des widgets Tkinter personnalisés, réutilisés dans le
+formulaire d'ajout de partie (fenetre_ajout_fiches.py) :
+- ChampAvancementAuto : un champ texte simple qui passe automatiquement au champ
+  suivant une fois la longueur maximale atteinte (ex. pour les codes courts).
+- ChampAutoCompletion : un champ texte avec autocomplétion dynamique (ex. pour
+  saisir le nom d'un joueur à partir du code de son équipe).
+"""
 import tkinter as tk
 
 def _calculer_commun(chaines: list[str]) -> str:
@@ -26,12 +34,15 @@ class ChampAvancementAuto(tk.Entry):
         self.bind("<KP_Enter>", self.passer_suivant)
 
     def sur_mod(self, *args):
+        """Appelée à chaque modification du texte : tronque si trop long et avance au suivant."""
         value = self.var.get()
         if len(value) >= self.max_len:
             self.var.set(value[:self.max_len])
             self.passer_suivant()
 
     def passer_suivant(self, event=None):
+        """Donne le focus au champ suivant (s'il existe) et sélectionne tout son contenu,
+        pour permettre à l'utilisateur de continuer à taper directement (le remplaçant)."""
         if self.next_widget:
             self.next_widget.focus_set()
             if hasattr(self.next_widget, "icursor"):
@@ -52,26 +63,41 @@ class ChampAutoCompletion(tk.Entry):
     }
 
     def __init__(self, master, get_candidats, next_widget=None, **kwargs):
+        """
+        :param get_candidats: fonction sans argument qui retourne la liste actuelle
+            des candidats possibles (appelée à chaque frappe, car elle peut dépendre
+            d'un autre champ, ex. le code d'équipe, qui peut ne pas encore être rempli).
+        :param next_widget: widget à activer une fois la saisie terminée (Entrée ou
+            complétion unique).
+        """
         super().__init__(master, **kwargs)
         self.get_candidats = get_candidats
         self.next_widget = next_widget
-        self.ecrit = ""
+        self.ecrit = ""  # Ce que l'utilisateur a réellement tapé (sans la partie auto-complétée)
         self.bind("<KeyRelease>", self.sur_touche_lachee)
         self.bind("<Return>", self.passer_suivant)
         self.bind("<KP_Enter>", self.passer_suivant)
 
     def sur_touche_lachee(self, event):
+        """Appelée à chaque relâchement de touche : met à jour self.ecrit puis rafraîchit
+        la complétion affichée dans le champ."""
         if event.keysym in self.TOUCHES_IGNOREES:
             return
 
         is_suppr = event.keysym in ("BackSpace", "Delete")
 
         if is_suppr:
+            # Sur suppression, on considère tout le texte restant comme "écrit"
+            # (pas de sélection auto-complétée à retirer).
             self.ecrit = self.get()
         else:
+            # Sinon, seule la portion avant le curseur est considérée comme "écrite"
+            # par l'utilisateur (le reste peut être une complétion déjà affichée).
             pos = self.index(tk.INSERT)
             self.ecrit = self.get()[:pos]
 
+        # On n'autorise une nouvelle complétion après une suppression que s'il ne
+        # reste qu'un seul candidat possible correspondant exactement.
         self._maj_candidats(autoriser_completion=not is_suppr or self._a_un_seul_candidat())
 
     def _candidats_disponibles(self):
@@ -82,15 +108,25 @@ class ChampAutoCompletion(tk.Entry):
             return []
 
     def _a_un_seul_candidat(self):
+        """Vrai si un seul candidat correspond exactement (casse ignorée) à self.ecrit."""
         candidats = self._filtrer()
         return len(candidats) == 1 and candidats[0].lower() == self.ecrit.lower()
 
     def _filtrer(self):
+        """Retourne la liste des candidats dont le nom commence par ce qui a été tapé
+        (insensible à la casse). Liste vide si rien n'a encore été tapé."""
         if not self.ecrit:
             return []
         return [c for c in self._candidats_disponibles() if c.lower().startswith(self.ecrit.lower())]
 
     def _maj_candidats(self, autoriser_completion):
+        """Recalcule les candidats correspondants et met à jour l'affichage du champ :
+        - Si aucun candidat : affiche simplement ce qui a été tapé.
+        - Sinon : complète (si autorisé) jusqu'au plus long préfixe commun aux candidats,
+          la partie complétée étant sélectionnée (pour pouvoir être remplacée en continuant à taper).
+        - Si un seul candidat correspond exactement au résultat affiché, on passe
+          automatiquement au champ suivant.
+        """
         candidats = self._filtrer()
 
         if not candidats:
@@ -105,6 +141,9 @@ class ChampAutoCompletion(tk.Entry):
             self.passer_suivant()
 
     def _set_affichage(self, texte, longueur):
+        """Affiche `texte` dans le champ, avec le curseur juste après la portion
+        réellement tapée par l'utilisateur (longueur), et sélectionne le reste
+        (la partie auto-complétée) s'il y en a."""
         self.delete(0, tk.END)
         self.insert(0, texte)
         self.icursor(longueur)
@@ -112,6 +151,7 @@ class ChampAutoCompletion(tk.Entry):
             self.select_range(longueur, tk.END)
 
     def passer_suivant(self, event=None):
+        """Donne le focus au champ suivant (s'il existe) et sélectionne tout son contenu."""
         if self.next_widget:
             self.next_widget.focus_set()
             if hasattr(self.next_widget, "icursor"):

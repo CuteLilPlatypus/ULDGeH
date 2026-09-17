@@ -31,6 +31,7 @@ class Equipe:
     def moy_pts_pour(self) -> float:
         """
         Calcule la moyenne des points scorés par l'école
+        (uniquement sur les parties où l'équipe a un score enregistré, ex. pas de forfait).
         :return: la moyenne des points
         """
         nb_parties = sum(score is not None for score in self.scores)
@@ -41,20 +42,28 @@ class Equipe:
 
     def ajouter_partie(self, partie: ResultatMatch):
         """
-        Ajoute une partie à la liste des parties de l'équipe
-        :param partie: Résultats d'un match
+        Ajoute les résultats d'une partie (score de l'équipe + scores de ses joueurs)
+        à l'historique de l'équipe. Appelée une fois par équipe participante,
+        depuis Tournoi.ajouter_partie_depuis_resultat.
+        :param partie: Résultats d'un match (contient les scores des deux équipes)
         """
+        # Détermine si cette équipe était "Équipe A" ou "Équipe B" dans le formulaire,
+        # afin de savoir dans quelles clés (nom_A/score_A ou nom_B/score_B) lire ses données.
         prefixe = "A" if partie.scores["Équipe"]["nom_A"] == self.code else "B"
         self.scores.append(int(partie.scores["Équipe"][f"score_{prefixe}"]))
 
+        # Ajout du score de chacun des 4 joueurs possibles (Joueur 1 à 4).
         for i in range(4):
             idx = i + 1
             score = partie.scores[f"Joueur {idx}"][f"score_{prefixe}"]
             if score is None:
+                # Aucun score saisi pour ce joueur sur cette partie : on l'ignore
+                # (ex. joueur absent ou poste non utilisé par l'équipe).
                 continue
             nom = partie.scores[f"Joueur {idx}"][f"nom_{prefixe}"]
             if nom is None:
                 raise ValueError(f"Score du Joueur {idx} ({prefixe}) saisi sans nom de joueur.")
+            # Recherche du joueur correspondant dans la liste des joueurs de l'équipe.
             joueur = next((j for j in self.joueurs if j.nom == nom), None)
             if joueur is None:
                 raise ValueError(f"Joueur introuvable dans l'équipe {self.code} : {nom!r}")

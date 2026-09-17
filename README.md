@@ -35,7 +35,7 @@ Pour ajouter une partie, cliquer sur le bouton **« ajouter »** et remplir le t
 
 | Colonne | Description |
 |---|---|
-| **Nom (code)** | Nom du joueur ou code de l'équipe. Si un code d'équipe valide est entré, le nom de l'équipe se complète automatiquement lorsque le joueur y est enregistré. |
+| **Nom (code)** | Nom du joueur ou code de l'équipe. Si un code d'équipe valide est entré, le nom du joueur de l'équipe se complète automatiquement. |
 | **Score** | Score de l'entité inscrite dans la colonne à sa gauche (équipe ou joueur). |
 | **Match** | Numéro du match, calculé sur l'ensemble de la saison et non par soirée (ex. : le premier match de la deuxième soirée porte le numéro 5). |
 | **Plateau** | Numéro du plateau où se déroule la partie. |
@@ -45,3 +45,6 @@ Pour ajouter une partie, cliquer sur le bouton **« ajouter »** et remplir le t
 - Les cases de code d'équipe et de score avancent automatiquement à la case suivante une fois trois chiffres saisis.
 - Les cases de numéro de match et de plateau avancent automatiquement une fois deux chiffres saisis.
 - Les cases de nom avancent automatiquement à la case suivante une fois le nom complété (autocomplétion).
+
+## IA
+L'IA générative a été utilisée pour documenter et commenter le code.
