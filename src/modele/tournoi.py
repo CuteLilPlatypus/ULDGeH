@@ -12,6 +12,7 @@ import openpyxl
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Border, Alignment, Font, Side
 from openpyxl.worksheet.table import Table
+from openpyxl.utils import get_column_letter
 
 from src.modele.equipe import Equipe
 from src.modele.joueur import Joueur
@@ -31,6 +32,9 @@ class Tournoi:
         self.nom = nom
         self.parties = []
         self.equipes = {}
+
+    def __bool__(self):
+        return bool(self.equipes)
 
     def ajouter_partie(self, partie: Partie):
         """Ajoute une Partie (déjà construite) à l'historique du tournoi."""
@@ -553,10 +557,8 @@ class Tournoi:
                                 score_a = score_b = "Forfait"
                         paires = [(int(partie.eq_a), score_a), (int(partie.eq_b), score_b)]
                     else:
-                        # Aucune partie prévue pour ce plateau/match : cellules laissées vides.
                         paires = [(None, None), (None, None)]
 
-                    # Écriture des 2 rangées (équipe A puis équipe B) pour ce match/plateau.
                     for decalage, (code, score) in enumerate(paires):
                         rangee = ligne + decalage
                         premiere = decalage == 0
@@ -571,13 +573,11 @@ class Tournoi:
                         c_score.border = bordure_score(premiere, derniere)
                         c_code.fill = REMPLISSAGE_CODE
 
-                ligne += 2  # Passe au bloc de 2 rangées du prochain plateau
+                ligne += 2
 
-            # Largeurs des colonnes : plus large pour les étiquettes de plateau,
-            # étroite et uniforme pour toutes les colonnes code/score de match.
             ws.column_dimensions["A"].width = 12
             for col in range(2, 2 + match_max * 2):
-                ws.column_dimensions[openpyxl.kutils.get_column_letter(col)].width = 6
+                ws.column_dimensions[get_column_letter(col)].width = 6
 
         # Création du fichier : une feuille de classement, puis pour chaque niveau
         # ayant des équipes, ses feuilles de résultats de matchs et de stats individuelles.
@@ -590,6 +590,13 @@ class Tournoi:
             if len(niveau) > 0:
                 creer_page_resultats_match(niveau, wb)
                 creer_page_stats_ind(niveau, wb)
+
+        #Sauvegarde du tournoi pour récupération au besoin
+        ws_donnees = wb.create_sheet("_donnees")
+        ws_donnees.sheet_state = "hidden"
+        brut = json.dumps(self.to_dict(),ensure_ascii=False)
+        for i in range(0, len(brut),30000):
+            ws_donnees.append([brut[i:i + 30000]])
 
         wb.save(os.path.abspath(chemin))
 
@@ -610,6 +617,11 @@ class Tournoi:
 
             equipes_locales: dict[str, Equipe] = {}
             wb = openpyxl.load_workbook(chemin)
+
+            if "_donnees" in wb.sheetnames:
+                brut = "".join(r[0] for r in wb["_donnees"].iter_rows(values_only=True) if r[0])
+                return Tournoi.from_dict(json.loads(brut))
+
             ws = wb.active
             if ws is None:
                 return equipes_locales

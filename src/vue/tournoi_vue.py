@@ -119,9 +119,9 @@ class TournoiVue:
             # Active/désactive le défilement à la molette uniquement quand la souris
             # est au-dessus de ce Canvas précis (pour ne pas interférer avec les autres onglets).
             canvas.bind("<Enter>", lambda e, can=canvas: (
-                can.bind_all("<MouseWheel>", lambda e, can=can: can.yview_scroll(int(-1 * (e.delta / 120)), "units")),
+                can.bind_all("<MouseWheel>", lambda e, can=can: can.yview_scroll(int(-1 * (e.delta/50)), "units")),
                 can.bind_all("<Shift-MouseWheel>",
-                             lambda e, can=can: can.xview_scroll(int(-1 * (e.delta / 120)), "units")),
+                             lambda e, can=can: can.xview_scroll(int(-1 * (e.delta/50)), "units")),
             ))
             canvas.bind("<Leave>", lambda e, can=canvas: (
                 can.unbind_all("<MouseWheel>"),

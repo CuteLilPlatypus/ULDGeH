@@ -36,13 +36,16 @@ class App:
         self.tournoi = initialiser_tournoi()
 
         #Titre de fenêtre et cadre principal
+        largeur, hauteur = min(int(racine.winfo_screenwidth()*0.75), 2880), min(int(racine.winfo_screenheight()*0.75),1660)
+
         racine.title("ULDGeH")
-        cadre = tk.Canvas(racine, width=1200, height=1500)
-        cadre.pack()
+        racine.geometry(f"{largeur}x{hauteur}")
+        cadre = tk.Canvas(racine)
+        cadre.pack(fill="both", expand=True)
 
         # Barre de boutons
         barre = tk.Frame(cadre)
-        barre.pack(fill="both")
+        barre.pack(fill="x")
 
         # Chaque bouton appelle la méthode correspondante ci-dessous (voir plus bas dans la classe)
         tk.Button(barre, text="ajouter", command=self.creer_fenetre_ajout_partie).pack(side="left")
@@ -54,19 +57,20 @@ class App:
         racine.bind("<Control-s>", lambda e: self.sauvegarder_json())
         racine.bind("<Control-e>", lambda e: self.sauvegarder_excel())
         racine.bind("<Control-o>", lambda e: self.ouvrir_tournoi())
+        racine.bind("<Control-q>", lambda e: self.quitter())
 
         # Contenu principal : un cadre vide au départ, rempli par rafraichir()
         # (qui affichera soit la vue du tournoi, soit un message si aucun tournoi n'est chargé)
         page = self.page=tk.Frame(cadre)
         self.rafraichir()
 
-        page.pack()
+        page.pack(fill="both", expand=True)
 
     def ouvrir_tournoi(self):
         """
         Fonction qui sert à charger un tournoi dans l'App
         """
-        chemin = filedialog.askopenfilename(parent=self.racine, filetypes=[("json", ".json"),("xlsx", ".xlsx")])
+        chemin = filedialog.askopenfilename(parent=self.racine, filetypes=[("Supportés",".xlsx .json"),("json", ".json"),("xlsx", ".xlsx")])
         if chemin:
             self.tournoi = Tournoi.charger(chemin)
             self.tournoi.sauvegarder_json("dernier.json")
@@ -93,7 +97,7 @@ class App:
         if self.tournoi:
             TournoiVue(tournoi=self.tournoi).afficher(self.page)
         else:
-            tk.Label(self.page, text="Veuillez charger un tournoi").pack(side="left")
+            tk.Label(self.page, text="Veuillez charger ou initialiser un tournoi").pack(anchor="center")
 
     # Fonctions des boutons
     def sauvegarder_excel(self):
@@ -113,6 +117,14 @@ class App:
         """
         if self.tournoi:
             self.tournoi.sauvegarder_json("dernier.json")
+
+    def quitter(self):
+        """
+        Fonction pour quitter: enregistre un backup et quitte le logiciel
+        """
+        if self.tournoi:
+            self.tournoi.sauvegarder_json("backup.json")
+        racine.destroy()
 
     def creer_fenetre_ajout_partie(self):
         """
