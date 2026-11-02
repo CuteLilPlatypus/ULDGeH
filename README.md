@@ -15,21 +15,23 @@ Le logiciel permet de :
 
 ## Utilisation
 
-### Ouvrir un tournoi
+### Ouvrir un tournoi (Ctrl + o)
 
 Cliquer sur le bouton **« ouvrir »** et sélectionner le fichier voulu :
 - un fichier **JSON** pour reprendre un tournoi déjà initialisé ;
-- un fichier **Excel** pour en créer un nouveau.
+- un fichier **Excel** pour soit :
+    - reprendre un tournoi existant (le fichier doit avoir été créé par le programme);
+    - initialiser un tournoi à partir du fichier d'alignement des équipes.
 
-### Sauvegarder un tournoi
+### Sauvegarder un tournoi (Ctrl + s)
 
 Il est possible d'enregistrer le tournoi au format JSON pour une utilisation ultérieure. Pour ce faire, cliquer simplement sur le bouton **« sauvegarder »**. Un fichier `dernier.json` sera créé dans le même dossier que le fichier principal du programme, `main.py`.
 
-### Exporter un tournoi
+### Exporter un tournoi (Ctrl + e)
 
 Pour exporter le fichier au format XLSX (Excel, Sheets, Calc et autres tableurs), cliquer sur le bouton **« Exporter au format XLSX »**.
 
-### Ajouter une partie
+### Ajouter une partie (Ctrl + a)
 
 Pour ajouter une partie, cliquer sur le bouton **« ajouter »** et remplir le tableau :
 
@@ -48,3 +50,12 @@ Pour ajouter une partie, cliquer sur le bouton **« ajouter »** et remplir le t
 
 ## IA
 L'IA générative a été utilisée pour documenter et commenter le code.
+
+## Installation
+1. Pour installer le programme, vous devrez tout d'abord installer [Python](https://www.python.org/downloads/) (version 3.11 ou supérieur).
+2. [Téléchargez](https://github.com/CuteLilPlatypus/ULDGeH/archive/refs/heads/master.zip) ensuite le logiciel, et extrayez le fichier zip dans le dossier de votre choix.
+3. Ouvrez le terminal de votre choix et roulez la commande suivante :
+```code
+pip install openpyxl
+```
+4. Exécutez le fichier *main.py* avec python. 

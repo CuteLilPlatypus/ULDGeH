@@ -76,6 +76,7 @@ class App:
             self.tournoi.sauvegarder_json("dernier.json")
         self.rafraichir()
 
+
     def _maj_tournoi(self, tournoi: Tournoi):
         """
         Fonction interne pour remplacer le tournoi interne par un autre et mettre l'affichage à jour

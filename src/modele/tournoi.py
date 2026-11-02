@@ -592,7 +592,7 @@ class Tournoi:
                 creer_page_stats_ind(niveau, wb)
 
         #Sauvegarde du tournoi pour récupération au besoin
-        ws_donnees = wb.create_sheet("_donnees")
+        ws_donnees = wb.create_sheet("#donnees")
         ws_donnees.sheet_state = "hidden"
         brut = json.dumps(self.to_dict(),ensure_ascii=False)
         for i in range(0, len(brut),30000):
