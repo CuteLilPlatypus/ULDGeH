@@ -66,8 +66,14 @@ class Equipe:
             # Recherche du joueur correspondant dans la liste des joueurs de l'équipe.
             joueur = next((j for j in self.joueurs if j.nom == nom), None)
             if joueur is None:
-                raise ValueError(f"Joueur introuvable dans l'équipe {self.code} : {nom!r}")
+                nouveau_joueur:Joueur = Joueur(nom)
+                nouveau_joueur.scores = [None]*(len(self.scores)-1)
+                joueur = nouveau_joueur
+                self.joueurs.append(joueur)
             joueur.scores.append(int(score))
+        #Ajout de scores nuls pour les autres joueurs
+        for joueur in self.joueurs:
+            joueur.scores.extend([None]*(len(self.scores)-len(joueur.scores)))
 
     def obtenir_liste_noms(self):
         """
