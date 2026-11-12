@@ -1,61 +1,136 @@
-# ULDGeH
+# Gestion de tournoi
 
-**ULDGeH** (*Un Logiciel De Génies en Herbe*) est un petit programme Python servant à administrer un tournoi de Génies en herbe. Il vise à accélérer la compilation des résultats, remplaçant ainsi le document Excel qui remplissait auparavant cette fonction.
+Application de bureau (Python / Tkinter) pour suivre un tournoi par équipes réparties en niveaux
+(secondaire 1 à 5) : saisie des parties, résultats par plateau, statistiques individuelles et
+export Excel.
 
-Programme développé par Simon Charbonneau.
+## Installation
 
-## Fonctionnalités
+### Prérequis
 
-Le logiciel permet de :
+Python 3.9 ou plus récent, **avec tkinter**, à installer depuis
+[python.org](https://www.python.org/downloads/).
 
-- **Initialiser un tournoi** à partir du fichier Excel envoyé par le MPGHP, ce qui crée automatiquement les équipes ;
-- **Ajouter des parties** à ce tournoi ;
-- **Exporter** celui-ci au format JSON et Excel (export Excel en cours de développement) pour la diffusion des résultats ;
-- **Compiler automatiquement les statistiques** et établir les classements généraux, tant pour les équipes que pour les joueurs.
+- **Windows** : cochez « Add python.exe to PATH » pendant l'installation.
+- **macOS** : utilisez l'installateur de python.org. Le Python fourni avec macOS (`/usr/bin/python3`)
+  embarque un Tk 8.5 obsolète qui peut afficher une fenêtre vide. Avec Homebrew :
+  `brew install python python-tk`.
+
+### Première utilisation
+
+Double-cliquez sur le fichier correspondant à votre système (une seule fois, Internet requis) :
+
+| Système | Installation            | Lancement            |
+|---------|-------------------------|----------------------|
+| Windows | `installer_windows.bat` | `lancer_windows.bat` |
+| macOS   | `installer_mac.command` | `lancer_mac.command` |
+
+L'installation crée un environnement isolé dans le dossier `.venv` du projet et y installe
+les dépendances de `requirements.txt` (`openpyxl`). Rien n'est modifié dans le Python du système.
+
+Notes :
+
+- **Windows** : le lancement utilise `pythonw` (pas de fenêtre noire). Pour voir les erreurs,
+  remplacez `pythonw` par `python` dans `lancer_windows.bat`.
+- **macOS** : la fenêtre du Terminal reste ouverte pendant l'exécution ; la fermer quitte
+  l'application. Si macOS refuse d'ouvrir un fichier `.command` : clic droit > Ouvrir, ou, dans le
+  Terminal depuis le dossier du projet :
+  ```
+  xattr -dr com.apple.quarantine .
+  chmod +x *.command
+  ```
+
+### Lancement manuel (développement)
+
+Depuis la **racine du projet** (le dossier qui contient `src/`), car les imports sont de la forme
+`from src...` :
+
+```
+python -m src.main
+```
 
 ## Utilisation
 
-### Ouvrir un tournoi (Ctrl + o)
+### Barre d'outils et raccourcis
 
-Cliquer sur le bouton **« ouvrir »** et sélectionner le fichier voulu :
-- un fichier **JSON** pour reprendre un tournoi déjà initialisé ;
-- un fichier **Excel** pour soit :
-    - reprendre un tournoi existant (le fichier doit avoir été créé par le programme);
-    - initialiser un tournoi à partir du fichier d'alignement des équipes.
+| Action                    | Bouton                      | Raccourci |
+|---------------------------|-----------------------------|-----------|
+| Ajouter une partie        | **Ajouter**                 | `Ctrl+A`  |
+| Ouvrir un tournoi         | **Ouvrir**                  | `Ctrl+O`  |
+| Sauvegarder (JSON)        | **Sauvegarder**             | `Ctrl+S`  |
+| Exporter en Excel         | **Exporter au format XLSX** | `Ctrl+E`  |
 
-### Sauvegarder un tournoi (Ctrl + s)
+Sur macOS, les raccourcis utilisent la touche `Ctrl` (et non `Cmd`).
 
-Il est possible d'enregistrer le tournoi au format JSON pour une utilisation ultérieure. Pour ce faire, cliquer simplement sur le bouton **« sauvegarder »**. Un fichier `dernier.json` sera créé dans le même dossier que le fichier principal du programme, `main.py`.
+Tant qu'aucun tournoi n'est chargé, l'écran affiche « Veuillez charger un tournoi » et les actions
+d'ajout, de sauvegarde et d'export sont sans effet.
 
-### Exporter un tournoi (Ctrl + e)
+### Ouvrir un tournoi
 
-Pour exporter le fichier au format XLSX (Excel, Sheets, Calc et autres tableurs), cliquer sur le bouton **« Exporter au format XLSX »**.
+Le bouton **Ouvrir** accepte deux types de fichiers :
 
-### Ajouter une partie (Ctrl + a)
+- **`.json`** : un tournoi déjà sauvegardé (reprise du travail en cours) ;
+- **`.xlsx`** : la liste des inscriptions, pour créer un nouveau tournoi. Première ligne = en-têtes,
+  puis une ligne par équipe :
+  - colonne 1 : nom de l'école ;
+  - colonne 2 : niveau (le premier caractère est utilisé, de 1 à 5) ;
+  - colonne 4 et suivantes : un joueur par colonne.
 
-Pour ajouter une partie, cliquer sur le bouton **« ajouter »** et remplir le tableau :
+  Les codes d'équipe sont générés automatiquement (101, 102… pour le niveau 1, 201, 202… pour le
+  niveau 2, etc.). Si une école a plusieurs équipes dans un même niveau, une lettre est ajoutée à
+  son nom (« École A », « École B »…).
 
-| Colonne | Description |
-|---|---|
-| **Nom (code)** | Nom du joueur ou code de l'équipe. Si un code d'équipe valide est entré, le nom du joueur de l'équipe se complète automatiquement. |
-| **Score** | Score de l'entité inscrite dans la colonne à sa gauche (équipe ou joueur). |
-| **Match** | Numéro du match, calculé sur l'ensemble de la saison et non par soirée (ex. : le premier match de la deuxième soirée porte le numéro 5). |
-| **Plateau** | Numéro du plateau où se déroule la partie. |
+Le tournoi ouvert est enregistré dans `dernier.json`, et **rechargé automatiquement au prochain
+démarrage** s'il se trouve dans le dossier de travail.
 
-**Raccourcis de saisie :**
-- La touche **Entrée** permet de passer directement à la case suivante.
-- Les cases de code d'équipe et de score avancent automatiquement à la case suivante une fois trois chiffres saisis.
-- Les cases de numéro de match et de plateau avancent automatiquement une fois deux chiffres saisis.
-- Les cases de nom avancent automatiquement à la case suivante une fois le nom complété (autocomplétion).
+### Ajouter une partie
 
-## IA
-L'IA générative a été utilisée pour documenter et commenter le code.
+La fenêtre d'ajout (`Ctrl+A`) contient, pour chaque équipe, le nom (ou code) de l'équipe, son
+score, et le nom et le score de chacun de ses 4 joueurs, puis le numéro de match et le plateau.
 
-## Installation
-1. Pour installer le programme, vous devrez tout d'abord installer [Python](https://www.python.org/downloads/) (version 3.11 ou supérieur).
-2. [Téléchargez](https://github.com/CuteLilPlatypus/ULDGeH/archive/refs/heads/master.zip) ensuite le logiciel, et extrayez le fichier zip dans le dossier de votre choix.
-3. Ouvrez le terminal de votre choix et roulez la commande suivante :
-```code
-pip install openpyxl
+- La saisie est pensée pour le clavier : le curseur passe automatiquement au champ suivant et les
+  noms d'équipes et de joueurs sont auto-complétés.
+- **Forfaits** : saisissez `+` comme score de l'équipe gagnante et `-` pour l'équipe qui déclare
+  forfait. Deux `-` donnent un forfait des deux équipes.
+- **Échap** ferme la fenêtre.
+
+### Affichage
+
+Une paire d'onglets est créée pour chaque niveau comportant des données :
+
+- **Résultats secondaire N** : grille des matchs par plateau (lignes) et par numéro de match
+  (colonnes). Chaque bloc affiche le code des deux équipes sur la couleur de leur niveau et leur
+  score (« Victoire » / « Forfait » lorsqu'il n'y a pas de score) ;
+- **Stats ind. secondaire N** : tableau des joueurs avec code, équipe, moyenne et score à chaque
+  match, avec une bande de fond par équipe.
+
+Le défilement fonctionne à la molette et au **pavé tactile (deux doigts)** ; `Maj` + molette (ou un
+balayage horizontal) fait défiler horizontalement. Les onglets s'adaptent à la taille de la fenêtre
+(minimum 900 × 500).
+
+### Export Excel
+
+Le bouton **Exporter au format XLSX** génère un classeur avec le classement général, les stats
+individuelles et les résultats de matchs de chaque niveau.
+
+## Structure du projet
+
 ```
-4. Exécutez le fichier *main.py* avec python. 
+.
+├── installer_windows.bat / lancer_windows.bat
+├── installer_mac.command / lancer_mac.command
+├── requirements.txt
+└── src/
+    ├── main.py                       # fenêtre principale, barre d'outils, raccourcis
+    ├── modele/
+    │   ├── tournoi.py                # tournoi, classements, export Excel, sauvegarde JSON
+    │   ├── equipe.py
+    │   ├── joueur.py
+    │   └── partie.py
+    └── vue/
+        ├── style.py                  # thème (couleurs, polices) et couleurs des niveaux
+        ├── tournoi_vue.py            # onglets de résultats et de statistiques
+        ├── fenetre_ajout_fiches.py   # fenêtre d'ajout d'une partie
+        ├── widgets.py                # champs de saisie (avancement auto, auto-complétion)
+        └── defilement.py             # défilement molette / pavé tactile
+```
