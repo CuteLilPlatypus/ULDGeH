@@ -122,7 +122,7 @@ class App:
         """
         if self.tournoi:
             self.tournoi.sauvegarder_json("dernier.json")
-            messagebox.showinfo("Tournoi", "Tournoi enregistré.", parent=self.fenetre)
+            messagebox.showinfo("Tournoi", "Tournoi enregistré.", parent=self.racine)
 
     def quitter(self):
         """
