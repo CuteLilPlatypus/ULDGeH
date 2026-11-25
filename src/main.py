@@ -4,11 +4,12 @@ Fichier principal du projet
 import os
 import tkinter as tk
 
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 
 from src.vue.fenetre_ajout_fiches import UIAjoutPartie
 from src.modele.tournoi import Tournoi
 from src.vue.tournoi_vue import TournoiVue
+from src.vue.fenetre_generateur_horaire import UIHoraire
 
 
 def initialiser_tournoi() -> Tournoi:
@@ -52,12 +53,14 @@ class App:
         tk.Button(barre, text="ouvrir", command=self.ouvrir_tournoi).pack(side="left")
         tk.Button(barre, text="sauvegarder", command=self.sauvegarder_json).pack(side="left")
         tk.Button(barre, text="Exporter au format XLSX", command = self.sauvegarder_excel).pack(side="left")
+        tk.Button(barre, text="Générer un horaire", command  = self.creer_horaire).pack(side="left")
         # Raccourcis clavier connexes aux boutons (mêmes fonctions que ci-dessus)
         racine.bind("<Control-a>", lambda e: self.creer_fenetre_ajout_partie())
         racine.bind("<Control-s>", lambda e: self.sauvegarder_json())
         racine.bind("<Control-e>", lambda e: self.sauvegarder_excel())
         racine.bind("<Control-o>", lambda e: self.ouvrir_tournoi())
         racine.bind("<Control-q>", lambda e: self.quitter())
+        racine.bind("<Control-h>", lambda e: self.creer_horaire())
 
         # Contenu principal : un cadre vide au départ, rempli par rafraichir()
         # (qui affichera soit la vue du tournoi, soit un message si aucun tournoi n'est chargé)
@@ -109,6 +112,7 @@ class App:
         chemin = filedialog.asksaveasfilename(parent=self.racine, filetypes=[("xlsx", ".xlsx")])
         if chemin and self.tournoi:
             self.tournoi.generer_excel(chemin)
+            messagebox.showinfo("Excel", "Tournoi exporté", parent=self.racine)
 
     def sauvegarder_json(self):
         """
@@ -118,6 +122,7 @@ class App:
         """
         if self.tournoi:
             self.tournoi.sauvegarder_json("dernier.json")
+            messagebox.showinfo("Tournoi", "Tournoi enregistré.", parent=self.fenetre)
 
     def quitter(self):
         """
@@ -138,7 +143,10 @@ class App:
             return 1
 
         UIAjoutPartie(self.racine, self.tournoi, self._maj_tournoi)
-
+    def creer_horaire(self):
+        if not self.tournoi:
+            return 1
+        UIHoraire(self.racine, self.tournoi)
 
 if __name__ == "__main__":
     racine = tk.Tk()

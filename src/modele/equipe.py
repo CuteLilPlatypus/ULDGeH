@@ -50,6 +50,9 @@ class Equipe:
         # Détermine si cette équipe était "Équipe A" ou "Équipe B" dans le formulaire,
         # afin de savoir dans quelles clés (nom_A/score_A ou nom_B/score_B) lire ses données.
         prefixe = "A" if partie.scores["Équipe"]["nom_A"] == self.code else "B"
+        if partie.scores["Équipe"][f"score_{prefixe}"] is None :
+            self.scores.append(None)
+            return
         self.scores.append(int(partie.scores["Équipe"][f"score_{prefixe}"]))
 
         # Ajout du score de chacun des 4 joueurs possibles (Joueur 1 à 4).

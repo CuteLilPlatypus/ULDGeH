@@ -59,6 +59,7 @@ python -m src.main
 | Ouvrir un tournoi         | **Ouvrir**                  | `Ctrl+O`  |
 | Sauvegarder (JSON)        | **Sauvegarder**             | `Ctrl+S`  |
 | Exporter en Excel         | **Exporter au format XLSX** | `Ctrl+E`  |
+| Générer l'horaire du tournoi         | **Générer un horaire** | `Ctrl+H`  |
 
 Sur macOS, les raccourcis utilisent la touche `Ctrl` (et non `Cmd`).
 
@@ -93,6 +94,10 @@ score, et le nom et le score de chacun de ses 4 joueurs, puis le numéro de matc
 - **Forfaits** : saisissez `+` comme score de l'équipe gagnante et `-` pour l'équipe qui déclare
   forfait. Deux `-` donnent un forfait des deux équipes.
 - **Échap** ferme la fenêtre.
+
+### Génération d'horaire
+
+Un horaire pour toutes les soirées peut être généré automatiquement par le logiciel. Par défaut, le générateur génère vingt matchs, mais les heures des parties ainsi que le nombre de matchs peut être modifié dans la section `Paramètres` de `generateur_horaire.py`.
 
 ### Affichage
 

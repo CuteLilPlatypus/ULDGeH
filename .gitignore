@@ -2,6 +2,7 @@
 *.jpg
 .venv
 .idea
+*.json
 sortie
 sources
 src/test.py
